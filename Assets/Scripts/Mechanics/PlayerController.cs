@@ -5,6 +5,7 @@ using Platformer.Gameplay;
 using static Platformer.Core.Simulation;
 using Platformer.Model;
 using Platformer.Core;
+using UnityEngine.UI;
 
 namespace Platformer.Mechanics
 {
@@ -14,6 +15,8 @@ namespace Platformer.Mechanics
     /// </summary>
     public class PlayerController : KinematicObject
     {
+        public Slider aslider;
+
         public AudioClip jumpAudio;
         public AudioClip respawnAudio;
         public AudioClip ouchAudio;
@@ -28,6 +31,7 @@ namespace Platformer.Mechanics
         public float jumpTakeOffSpeed = 7;
 
         public JumpState jumpState = JumpState.Grounded;
+        public JumpUpdate jumpUpdate = JumpUpdate.ContinueJump;
         private bool stopJump;
         /*internal new*/ public Collider2D collider2d;
         /*internal new*/ public AudioSource audioSource;
@@ -55,10 +59,12 @@ namespace Platformer.Mechanics
         {
             if (controlEnabled)
             {
-                move.x = Input.GetAxis("Horizontal");
+                //move.x = Input.GetAxis("Horizontal");
+                move.x = aslider.value;
+                //Debug.Log(move.x);
                 if (jumpState == JumpState.Grounded && Input.GetButtonDown("Jump"))
                     jumpState = JumpState.PrepareToJump;
-                else if (Input.GetButtonUp("Jump"))
+                else if (jumpUpdate == JumpUpdate.StopJump) //Input.GetButtonUp("Jump")
                 {
                     stopJump = true;
                     Schedule<PlayerStopJump>().player = this;
@@ -98,6 +104,7 @@ namespace Platformer.Mechanics
                     break;
                 case JumpState.Landed:
                     jumpState = JumpState.Grounded;
+                    jumpUpdate = JumpUpdate.ContinueJump;
                     break;
             }
         }
@@ -136,6 +143,24 @@ namespace Platformer.Mechanics
             Jumping,
             InFlight,
             Landed
+        }
+
+
+        public enum JumpUpdate
+        {
+            StopJump,
+            ContinueJump
+        }
+
+
+        public void JumpButton()
+        {
+            jumpState = JumpState.PrepareToJump;
+            jumpUpdate = JumpUpdate.ContinueJump;
+        }
+        public void CancelJumpButton()
+        {
+            jumpUpdate = JumpUpdate.StopJump;
         }
     }
 }

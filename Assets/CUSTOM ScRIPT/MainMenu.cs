@@ -9,6 +9,7 @@ public class MainMenu : MonoBehaviour
     bool showUI = true;
     public int activePanel = 0;
     public GameObject[] panels;
+    public GameObject uiSettings;
     /// <summary>
     /// Enable the menu when the object is enabled.
     /// </summary>
@@ -19,10 +20,13 @@ public class MainMenu : MonoBehaviour
 
     public void ToggleMainMenu(bool toggle){
         if(toggle){
+            uiSettings.SetActive(false);
+
             Time.timeScale = 0;
             
         }else{
             panels[activePanel].SetActive(false);
+            uiSettings.SetActive(true);
             Time.timeScale = 1;
         }
     }
